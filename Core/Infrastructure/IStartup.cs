@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Core.Infrastructure
 {
@@ -21,7 +22,8 @@ namespace Core.Infrastructure
         /// Configure the using of added middleware
         /// </summary>
         /// <param name="application">Builder for configuring an application's request pipeline</param>
-        void Configure(IApplicationBuilder application, IHostingEnvironment env);
+        /// <param name="loggerFactory">Logger Factory</param>
+        void Configure(IApplicationBuilder application, IHostingEnvironment env, ILoggerFactory loggerFactory);
 
         /// <summary>
         /// Gets order of this startup configuration implementation

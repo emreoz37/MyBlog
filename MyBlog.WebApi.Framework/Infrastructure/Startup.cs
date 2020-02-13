@@ -1,14 +1,22 @@
-﻿using EasyCaching.Core;
+﻿using Data;
+using EasyCaching.Core;
+using EasyCaching.InMemory;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using EasyCaching.InMemory;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Data;
-using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
+using System;
 using System.IO;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
+using System.Linq;
 
 namespace MyBlog.Web.Framework.Infrastructure
 {
@@ -27,9 +35,9 @@ namespace MyBlog.Web.Framework.Infrastructure
         public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             var config = new ConfigurationBuilder()
-              .SetBasePath(Directory.GetCurrentDirectory())
-              .AddJsonFile("appsettings.json")
-              .Build();
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
 
             services.AddDbContextPool<ApplicationDbContext>(optionsBuilder =>
             {
@@ -60,19 +68,46 @@ namespace MyBlog.Web.Framework.Infrastructure
 
             services.AddSwaggerGen((options) =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "My Blog Api", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "My Blog Api",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Emre Oz",
+                        Email = "emreoz3734@gmail.com",
+                        Url = new Uri("https://github.com/emreoz37")
+                    }
+                });
             });
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            Log.Logger = new LoggerConfiguration()
+                   .ReadFrom.Configuration(config)
+                   .CreateLogger();
+
+            var mvcBuilder = services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            mvcBuilder.AddFluentValidation(cfg =>
+            {
+                //register all available validators from project assemblies
+                var assemblies = mvcBuilder.PartManager.ApplicationParts
+                    .OfType<AssemblyPart>()
+                    .Select(part => part.Assembly);
+
+                cfg.RegisterValidatorsFromAssemblies(assemblies);
+
+            });
+
+            services.AddApiVersioning(o => o.ApiVersionReader = new HeaderApiVersionReader("api-version"));
 
         }
 
-        /// <summary>
         /// Configure the using of added middleware
         /// </summary>
         /// <param name="application">Builder for configuring an application's request pipeline</param>
-        public void Configure(IApplicationBuilder application, IHostingEnvironment env)
+        /// <param name="loggerFactory">Logger Factory</param>
+        public virtual void Configure(IApplicationBuilder application, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             application.UseResponseCompression();
 
@@ -84,8 +119,11 @@ namespace MyBlog.Web.Framework.Infrastructure
 
             application.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Api v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Blog Api v1");
             });
+
+            loggerFactory.AddSerilog();
+
 
             if (env.IsDevelopment())
             {

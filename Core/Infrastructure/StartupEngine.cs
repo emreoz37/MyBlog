@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -160,7 +161,8 @@ namespace Core.Infrastructure
         /// </summary>
         /// <param name="application">Builder for configuring an application's request pipeline</param>
         /// <param name="env">Hosting environment</param>
-        public void ConfigureRequestPipeline(IApplicationBuilder application, IHostingEnvironment env)
+        /// <param name="loggerFactory">Logger Factory</param>
+        public virtual void ConfigureRequestPipeline(IApplicationBuilder application, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             //find startup configurations provided by other assemblies
             var typeFinder = Resolve<ITypeFinder>();
@@ -173,7 +175,7 @@ namespace Core.Infrastructure
 
             //configure request pipeline
             foreach (var instance in instances)
-                instance.Configure(application, env);
+                instance.Configure(application, env, loggerFactory);
         }
 
         /// <summary>

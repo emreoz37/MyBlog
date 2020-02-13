@@ -7,15 +7,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{8232EFCB-EE38-4A3F-9E6F-F215B831F10D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{3CDFF9F8-C259-485C-87E1-007335E2CF14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{3CDFF9F8-C259-485C-87E1-007335E2CF14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{9D5AEE08-A81A-4FA0-981B-48B2DE5A5068}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{9D5AEE08-A81A-4FA0-981B-48B2DE5A5068}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{9410E83C-888A-4242-8AE1-F3BF498068E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{9410E83C-888A-4242-8AE1-F3BF498068E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlog.WebApi", "MyBlog.WebApi\MyBlog.WebApi.csproj", "{A0FED457-66B1-41AA-B69C-EE9AD8CC6310}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog.WebApi", "MyBlog.WebApi\MyBlog.WebApi.csproj", "{A0FED457-66B1-41AA-B69C-EE9AD8CC6310}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlog.WebApi.Framework", "MyBlog.WebApi.Framework\MyBlog.WebApi.Framework.csproj", "{F1AEB8B5-8FC4-4FC3-A9D3-B912B1AEC31C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog.WebApi.Framework", "MyBlog.WebApi.Framework\MyBlog.WebApi.Framework.csproj", "{F1AEB8B5-8FC4-4FC3-A9D3-B912B1AEC31C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

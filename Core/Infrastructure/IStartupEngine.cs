@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Core.Infrastructure
 {
@@ -22,7 +23,8 @@ namespace Core.Infrastructure
         /// </summary>
         /// <param name="application">Builder for configuring an application's request pipeline</param>
         /// <param name="env">Hosting environment</param>
-        void ConfigureRequestPipeline(IApplicationBuilder application, IHostingEnvironment env);
+        /// <param name="loggerFactory">Logger Factory</param>
+        void ConfigureRequestPipeline(IApplicationBuilder application, IHostingEnvironment env, ILoggerFactory loggerFactory);
 
         /// <summary>
         /// Resolve dependency

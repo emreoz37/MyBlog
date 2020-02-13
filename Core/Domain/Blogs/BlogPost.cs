@@ -8,7 +8,7 @@ namespace Core.Domain.Blogs
     /// </summary>
     public partial class BlogPost : BaseEntity
     {
-        private ICollection<BlogComment> _blogComments;
+        //private ICollection<BlogComment> _blogComments;
 
         /// <summary>
         /// Gets or sets the language identifier
@@ -58,10 +58,10 @@ namespace Core.Domain.Blogs
         /// <summary>
         /// Gets or sets the blog comments
         /// </summary>
-        public virtual ICollection<BlogComment> BlogComments
-        {
-            get => _blogComments ?? (_blogComments = new List<BlogComment>());
-            protected set => _blogComments = value;
-        }
+        //public virtual ICollection<BlogComment> BlogComments
+        //{
+        //    get => _blogComments ?? (_blogComments = new List<BlogComment>());
+        //    protected set => _blogComments = value;
+        //}
     }
 }

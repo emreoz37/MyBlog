@@ -20,10 +20,12 @@ namespace Data.Mapping.Blogs
             builder.ToTable(nameof(BlogComment));
             builder.HasKey(comment => comment.Id);
 
-            builder.HasOne(comment => comment.BlogPost)
-                .WithMany(blog => blog.BlogComments)
-                .HasForeignKey(comment => comment.BlogPostId)
-                .IsRequired();
+
+            //If desired, comments can be reached in this way, but I prefer to reach through the blog service.
+            //builder.HasOne(comment => comment.BlogPost)
+            //    .WithMany(blog => blog.BlogComments)
+            //    .HasForeignKey(comment => comment.BlogPostId)
+            //    .IsRequired();
 
             base.Configure(builder);
         }

@@ -32,10 +32,10 @@ namespace Core.Domain.Blogs
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
 
-        /// <summary>
-        /// Gets or sets the blog post
-        /// </summary>
-        public virtual BlogPost BlogPost { get; set; }
+        ///// <summary>
+        ///// Gets or sets the blog post
+        ///// </summary>
+        //public virtual BlogPost BlogPost { get; set; }
 
     }
 }

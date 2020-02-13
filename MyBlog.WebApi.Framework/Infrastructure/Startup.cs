@@ -2,8 +2,10 @@
 using EasyCaching.Core;
 using EasyCaching.InMemory;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -11,9 +13,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MyBlog.WebApi.Framework.Filters;
+using MyBlog.WebApi.Framework.GlobalErrorHandling.Extensions;
+using MyBlog.WebApi.Framework.Infrastructure.Extensions;
 using Serilog;
-using Serilog.Events;
 using System;
 using System.IO;
 using System.Linq;
@@ -49,6 +54,9 @@ namespace MyBlog.Web.Framework.Infrastructure
             //add EF services
             services.AddEntityFrameworkSqlServer();
             services.AddEntityFrameworkProxies();
+
+            services.ConfigureCors();
+            // services.ConfigureIISIntegration();
 
             //compression
             services.AddResponseCompression();
@@ -86,7 +94,21 @@ namespace MyBlog.Web.Framework.Infrastructure
                    .ReadFrom.Configuration(config)
                    .CreateLogger();
 
-            var mvcBuilder = services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            //Disable automatic 400 respone
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
+            var mvcBuilder = services.AddMvc(options =>
+            {
+                options.Filters.Add<ValidationFilter>();
+            })
+                 .AddJsonOptions(options =>
+                 {
+                     options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                 })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             mvcBuilder.AddFluentValidation(cfg =>
             {
@@ -109,22 +131,6 @@ namespace MyBlog.Web.Framework.Infrastructure
         /// <param name="loggerFactory">Logger Factory</param>
         public virtual void Configure(IApplicationBuilder application, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            application.UseResponseCompression();
-
-            //easy caching
-            application.UseEasyCaching();
-
-            //Swagger   
-            application.UseSwagger();
-
-            application.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Blog Api v1");
-            });
-
-            loggerFactory.AddSerilog();
-
-
             if (env.IsDevelopment())
             {
                 application.UseDeveloperExceptionPage();
@@ -134,6 +140,32 @@ namespace MyBlog.Web.Framework.Infrastructure
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 application.UseHsts();
             }
+
+            application.UseResponseCompression();
+
+            //easy caching
+            application.UseEasyCaching();
+
+            //Swagger   
+            application.UseSwagger();
+
+            application.UseStaticFiles();
+
+            application.UseCors("CorsPolicy");
+
+            application.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.All
+            });
+
+            application.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Blog Api v1");
+            });
+
+            loggerFactory.AddSerilog();
+
+            application.ConfigureCustomExceptionMiddleware();
 
             //app.UseHttpsRedirection();
             application.UseMvc();

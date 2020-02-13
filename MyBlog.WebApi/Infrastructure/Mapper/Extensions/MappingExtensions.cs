@@ -45,7 +45,7 @@ namespace MyBlog.WebApi.Infrastructure.Mapper.Extensions
 
         #region Methods
 
-                #region Dto-Entity mapping
+        #region Dto-Entity mapping
 
         /// <summary>
         /// Execute a mapping from the entity to a new Dto
@@ -87,7 +87,7 @@ namespace MyBlog.WebApi.Infrastructure.Mapper.Extensions
         /// <typeparam name="TEntity">Entity type</typeparam>
         /// <param name="Dto">Dto to map from</param>
         /// <returns>Mapped entity</returns>
-        public static TEntity ToEntity<TEntity>(this BaseEntityDto Dto) where TEntity : BaseEntity
+        public static TEntity ToEntity<TEntity>(this BaseRequestDto Dto) where TEntity : BaseEntity
         {
             if (Dto == null)
                 throw new ArgumentNullException(nameof(Dto));
@@ -104,7 +104,7 @@ namespace MyBlog.WebApi.Infrastructure.Mapper.Extensions
         /// <param name="entity">Entity to map into</param>
         /// <returns>Mapped entity</returns>
         public static TEntity ToEntity<TEntity, TDto>(this TDto Dto, TEntity entity)
-            where TEntity : BaseEntity where TDto : BaseEntityDto
+            where TEntity : BaseEntity where TDto : BaseRequestDto
         {
             if (Dto == null)
                 throw new ArgumentNullException(nameof(Dto));

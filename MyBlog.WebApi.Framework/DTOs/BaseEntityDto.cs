@@ -1,13 +1,13 @@
 ﻿namespace MyBlog.WebApi.Framework.DTOs
 {
     /// <summary>
-    /// Represents base entity dto
+    /// Base Entity Response
     /// </summary>
-    public partial class BaseEntityDto
+    public class BaseEntityDto
     {
-        /// <summary>
-        /// Gets or sets model identifier
-        /// </summary>
+        ///// <summary>
+        ///// Gets or sets model identifier
+        ///// </summary>
         public virtual int Id { get; set; }
     }
 }

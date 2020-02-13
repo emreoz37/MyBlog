@@ -39,13 +39,13 @@ namespace MyBlog.WebApi
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddScoped<IUrlHelper>(factory =>
-            {
-                var actionContext = factory.GetService<IActionContextAccessor>()
-                                           .ActionContext;
-                return new UrlHelper(actionContext);
-            });
+            //services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            //services.AddScoped<IUrlHelper>(factory =>
+            //{
+            //    var actionContext = factory.GetService<IActionContextAccessor>()
+            //                               .ActionContext;
+            //    return new UrlHelper(actionContext);
+            //});
 
 
             //create default file provider

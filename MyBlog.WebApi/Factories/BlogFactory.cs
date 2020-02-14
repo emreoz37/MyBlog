@@ -1,7 +1,6 @@
 ﻿using Core.Caching;
 using Core.Domain.Blogs;
 using MyBlog.WebApi.DTOs.Blogs;
-using MyBlog.WebApi.Infrastructure.Cache;
 using MyBlog.WebApi.Infrastructure.Mapper.Extensions;
 using Services.Blogs;
 using Services.Helpers;
@@ -19,19 +18,16 @@ namespace MyBlog.WebApi.Factories
     {
         #region Fields
         private readonly IBlogService _blogService;
-        private readonly IStaticCacheManager _cacheManager;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IUserService _userService;
         #endregion
 
         #region Constructor
         public BlogFactory(IBlogService blogService,
-            IStaticCacheManager cacheManager,
             IDateTimeHelper dateTimeHelper,
             IUserService userService)
         {
             _blogService = blogService;
-            _cacheManager = cacheManager;
             _dateTimeHelper = dateTimeHelper;
             _userService = userService;
         }
@@ -56,8 +52,7 @@ namespace MyBlog.WebApi.Factories
             blogPostDto.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.StartDateUtc ?? blogPost.CreatedOnUtc, DateTimeKind.Utc).ToString("D"); //TODO: Can be changed according to need
             blogPostDto.Tags = _blogService.ParseTags(blogPost);
 
-            var cacheKey = string.Format(CacheDefaults.BlogCommentsNumberKey, blogPost.Id, true);
-            blogPostDto.NumberOfComments = _cacheManager.Get(cacheKey, () => _blogService.GetBlogCommentsCount(blogPost, true));
+            blogPostDto.NumberOfComments = _blogService.GetBlogCommentsCount(blogPost, true);
 
             if (prepareComments)
             {

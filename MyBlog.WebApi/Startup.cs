@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MyBlog.WebApi.Framework.Infrastructure.Extensions;
 using System;
 
 namespace MyBlog.WebApi
@@ -18,16 +19,14 @@ namespace MyBlog.WebApi
         #region Fields
         private readonly IConfiguration _configuration;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly ILoggerFactory _loggerFactory;
         #endregion
 
         #region Ctor
 
-        public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
             _configuration = configuration;
             _hostingEnvironment = hostingEnvironment;
-            _loggerFactory = loggerFactory;
         }
 
         #endregion
@@ -38,26 +37,7 @@ namespace MyBlog.WebApi
         /// <param name="services">Collection of service descriptors</param>
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            //services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            //services.AddScoped<IUrlHelper>(factory =>
-            //{
-            //    var actionContext = factory.GetService<IActionContextAccessor>()
-            //                               .ActionContext;
-            //    return new UrlHelper(actionContext);
-            //});
-
-
-            //create default file provider
-            CommonHelper.DefaultFileProvider = new ProjectFileProvider(_hostingEnvironment);
-
-
-            var engine = StartupEngineContext.Create();
-            var serviceProvider = engine.ConfigureServices(services, _configuration);
-
-
-
-            return serviceProvider;
+            return services.ConfigureApplicationServices(_configuration, _hostingEnvironment);
         }
 
         /// <summary>
@@ -66,7 +46,7 @@ namespace MyBlog.WebApi
         /// <param name="application">Builder for configuring an application's request pipeline</param>
         public void Configure(IApplicationBuilder application)
         {
-            StartupEngineContext.Current.ConfigureRequestPipeline(application, _hostingEnvironment, _loggerFactory);
+            application.ConfigureRequestPipeline();
         }
     }
 }

@@ -50,7 +50,8 @@ namespace Services.Blogs
 
             _blogPostRepository.Delete(blogPost); //TODO : Update can be done instead of deleting from the database.
 
-            _cacheManager.RemoveByPrefix("pres.blog");
+            _cacheManager.RemoveByPrefix(CachingDefaults.BlogPrefixCacheKey);
+            _cacheManager.Remove(string.Format(CachingDefaults.EntityCacheKey, typeof(BlogPost).Name, blogPost.Id));
         }
 
         /// <summary>
@@ -71,19 +72,20 @@ namespace Services.Blogs
         /// </summary>
         /// <param name="blogPostIds">Blog post identifiers</param>
         /// <returns>Blog posts</returns>
-        public virtual IList<BlogPost> GetBlogPostsByIds(int[] blogPostIds)
+        public virtual IList<BlogPost> GetBlogPostsByIds(int[] blogPostIds) //TODO : Something like this can be done in the future
         {
             var query = _blogPostRepository.Table;
             return query.Where(bp => blogPostIds.Contains(bp.Id)).ToList();
         }
 
+        //TODO: Development to be made in the next phase.
         /// <summary>
         /// Gets all blog posts
         /// </summary>
-        /// <param name="storeId">The store identifier; pass 0 to load all records</param>
-        /// <param name="languageId">Language identifier; 0 if you want to get all records</param>
-        /// <param name="dateFrom">Filter by created date; null if you want to get all records</param>
-        /// <param name="dateTo">Filter by created date; null if you want to get all records</param>
+        /// <param name="storeId">The store identifier; pass 0 to load all records</param>  //TODO: It can be filtered by adding such a parameter 
+        /// <param name="languageId">Language identifier; 0 if you want to get all records</param> //TODO : It can be filtered by adding such a parameter
+        /// <param name="dateFrom">Filter by created date; null if you want to get all records</param> // TODO: It can be filtered by adding such a parameter
+        /// <param name="dateTo">Filter by created date; null if you want to get all records</param> // TODO: It can be filtered by adding such a parameter
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
@@ -106,8 +108,8 @@ namespace Services.Blogs
         /// <summary>
         /// Gets all blog posts
         /// </summary>
-        /// <param name="storeId">The store identifier; pass 0 to load all records</param>
-        /// <param name="languageId">Language identifier. 0 if you want to get all blog posts</param>
+        /// <param name="storeId">The store identifier; pass 0 to load all records</param> //TODO: It can be filtered by adding such a parameter 
+        /// <param name="languageId">Language identifier. 0 if you want to get all blog posts</param> //TODO: It can be filtered by adding such a parameter 
         /// <param name="tag">Tag</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
@@ -133,6 +135,7 @@ namespace Services.Blogs
             return result;
         }
 
+        // TODO : Development to be made in the next phase
         /// <summary>
         /// Gets all blog post tags
         /// </summary>
@@ -181,7 +184,7 @@ namespace Services.Blogs
 
             _blogPostRepository.Insert(blogPost);
 
-            _cacheManager.RemoveByPrefix("pres.blog");
+            _cacheManager.RemoveByPrefix(CachingDefaults.BlogPrefixCacheKey);
 
         }
 
@@ -196,9 +199,11 @@ namespace Services.Blogs
 
             _blogPostRepository.Update(blogPost);
 
-            _cacheManager.RemoveByPrefix("pres.blog");
+            _cacheManager.RemoveByPrefix(CachingDefaults.BlogPrefixCacheKey);
+            _cacheManager.Remove(string.Format(CachingDefaults.EntityCacheKey, typeof(BlogPost).Name, blogPost.Id));
         }
 
+        // TODO : Development to be made in the next phase
         /// <summary>
         /// Returns all posts published between the two dates.
         /// </summary>
@@ -236,6 +241,7 @@ namespace Services.Blogs
             return tags;
         }
 
+        // TODO : Development to be made in the next phase
         /// <summary>
         /// Get a value indicating whether a blog post is available now (availability dates)
         /// </summary>
@@ -263,8 +269,8 @@ namespace Services.Blogs
         /// <summary>
         /// Gets all comments
         /// </summary>
-        /// <param name="customerId">Customer identifier; 0 to load all records</param>
-        /// <param name="storeId">Store identifier; pass 0 to load all records</param>
+        /// <param name="customerId">Customer identifier; 0 to load all records</param> 
+        /// <param name="storeId">Store identifier; pass 0 to load all records</param> //TODO: It can be filtered by adding such a parameter 
         /// <param name="blogPostId">Blog post ID; 0 or null to load all records</param>
         /// <param name="approved">A value indicating whether to content is approved; null to load all records</param> 
         /// <param name="fromUtc">Item creation from; null to load all records</param>
@@ -311,7 +317,8 @@ namespace Services.Blogs
 
             return _blogCommentRepository.ToCachedGetById(blogCommentId);
         }
-
+        
+        // TODO : Development to be made in the next phase
         /// <summary>
         /// Get blog comments by identifiers
         /// </summary>
@@ -338,6 +345,7 @@ namespace Services.Blogs
             return sortedComments;
         }
 
+
         /// <summary>
         /// Get the count of blog comments
         /// </summary>
@@ -352,7 +360,9 @@ namespace Services.Blogs
             if (isApproved.HasValue)
                 query = query.Where(comment => comment.IsApproved == isApproved.Value);
 
-            return query.Count();
+            var cacheKey = string.Format(CachingDefaults.BlogCommentsNumberKey, blogPost.Id, true);
+
+            return _cacheManager.Get(cacheKey, () => query.Count());
         }
 
         /// <summary>
@@ -366,7 +376,8 @@ namespace Services.Blogs
 
             _blogCommentRepository.Update(blogComment);
 
-            _cacheManager.RemoveByPrefix("pres.blogcomment");
+            _cacheManager.RemoveByPrefix(CachingDefaults.BlogPrefixCacheKey);
+            _cacheManager.Remove(string.Format(CachingDefaults.EntityCacheKey, typeof(BlogComment).Name, blogComment.Id));
         }
 
         /// <summary>
@@ -381,9 +392,12 @@ namespace Services.Blogs
             _blogCommentRepository.Delete(blogComment);
 
 
-            _cacheManager.RemoveByPrefix("pres.blogcomment");
+            _cacheManager.RemoveByPrefix(CachingDefaults.BlogPrefixCacheKey);
+            _cacheManager.Remove(string.Format(CachingDefaults.EntityCacheKey, typeof(BlogComment).Name, blogComment.Id));
+            _cacheManager.RemoveByPrefix(CachingDefaults.BlogCommentsPrefixCacheKey);
         }
 
+        // TODO : Development to be made in the next phase
         /// <summary>
         /// Deletes blog comments
         /// </summary>
@@ -410,7 +424,8 @@ namespace Services.Blogs
 
             _blogCommentRepository.Insert(blogComment);
 
-            _cacheManager.RemoveByPrefix("pres.blogcomment");
+            _cacheManager.RemoveByPrefix(CachingDefaults.BlogPrefixCacheKey);
+            _cacheManager.RemoveByPrefix(CachingDefaults.BlogCommentsPrefixCacheKey);
         }
 
         #endregion

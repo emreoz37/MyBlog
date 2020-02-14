@@ -69,15 +69,6 @@
             <param name="blogComment">Blog comment entity</param>
             <returns>Blog comment dto</returns>
         </member>
-        <member name="P:MyBlog.WebApi.Infrastructure.Cache.CacheDefaults.BlogCommentsNumberKey">
-            <summary>
-            Key for number of blog comments
-            </summary>
-            <remarks>
-            {0} : blog post ID
-            {1} : are only approved comments?
-            </remarks>
-        </member>
         <member name="T:MyBlog.WebApi.Infrastructure.DependencyRegistrar">
             <summary>
             Dependency registrar

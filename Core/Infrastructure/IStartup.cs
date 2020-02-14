@@ -15,8 +15,9 @@ namespace Core.Infrastructure
         /// Add and configure any of the middleware
         /// </summary>
         /// <param name="services">Collection of service descriptors</param>
+        /// <param name="typeFinder">Type Finder</param>
         /// <param name="configuration">Configuration of the application</param>
-        void ConfigureServices(IServiceCollection services, IConfiguration configuration);
+        void ConfigureServices(IServiceCollection services, ITypeFinder typeFinder, IConfiguration configuration);
 
         /// <summary>
         /// Configure the using of added middleware

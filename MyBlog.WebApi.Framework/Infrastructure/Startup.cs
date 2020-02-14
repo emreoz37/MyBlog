@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using Core.Infrastructure;
+using Data;
 using EasyCaching.Core;
 using EasyCaching.InMemory;
 using FluentValidation.AspNetCore;
@@ -19,9 +20,13 @@ using MyBlog.WebApi.Framework.Filters;
 using MyBlog.WebApi.Framework.GlobalErrorHandling.Extensions;
 using MyBlog.WebApi.Framework.Infrastructure.Extensions;
 using Serilog;
+using Services.Helpers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace MyBlog.Web.Framework.Infrastructure
 {
@@ -36,8 +41,9 @@ namespace MyBlog.Web.Framework.Infrastructure
         /// Add and configure any of the middleware
         /// </summary>
         /// <param name="services">Collection of service descriptors</param>
+        /// <param name="typeFinder">Type Finder</param>
         /// <param name="configuration">Configuration of the application</param>
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        public void ConfigureServices(IServiceCollection services, ITypeFinder typeFinder, IConfiguration configuration)
         {
             var config = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -80,6 +86,7 @@ namespace MyBlog.Web.Framework.Infrastructure
                 {
                     Version = "v1",
                     Title = "My Blog Api",
+                    Description = ".Net Developer Evaluation Project For Digiturk Company",
                     Contact = new OpenApiContact
                     {
                         Name = "Emre Oz",
@@ -87,8 +94,69 @@ namespace MyBlog.Web.Framework.Infrastructure
                         Url = new Uri("https://github.com/emreoz37")
                     }
                 });
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT Authorization header using the Bearer scheme. <br>
+                      Enter 'Bearer' [space] and then your token in the text input below. <br>
+                      Example: 'Bearer 12345abcdef'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+      {
+        {
+          new OpenApiSecurityScheme
+          {
+            Reference = new OpenApiReference
+              {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+              },
+              Scheme = "oauth2",
+              Name = "Bearer",
+              In = ParameterLocation.Header,
+
+            },
+            new List<string>()
+          }
+        });
+
+                //TODO: Could dynamically find here.
+                var xmlFile = typeFinder.GetAssemblies().FirstOrDefault(x => x.GetName().Name == "MyBlog.WebApi");
+                if (xmlFile != null)
+                {
+                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile.GetName().Name + ".XML");
+                    options.IncludeXmlComments(xmlPath);
+                }
+
             });
 
+            var appSettingsSection = config.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            // JWT authentication
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
 
             Log.Logger = new LoggerConfiguration()
                    .ReadFrom.Configuration(config)
@@ -166,6 +234,8 @@ namespace MyBlog.Web.Framework.Infrastructure
             loggerFactory.AddSerilog();
 
             application.ConfigureCustomExceptionMiddleware();
+
+            application.UseAuthentication();
 
             //app.UseHttpsRedirection();
             application.UseMvc();

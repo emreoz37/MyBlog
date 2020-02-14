@@ -142,7 +142,7 @@ namespace Core.Infrastructure
 
             //configure services
             foreach (var instance in instances)
-                instance.ConfigureServices(services, configuration);
+                instance.ConfigureServices(services, typeFinder,  configuration);
 
             //register mapper configurations
             AddAutoMapper(typeFinder);

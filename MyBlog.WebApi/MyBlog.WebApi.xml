@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MyBlog.WebApi</name>
+    </assembly>
+    <members>
+        <member name="M:MyBlog.WebApi.Controllers.UsersController.Authenticate(MyBlog.WebApi.DTOs.Users.UserForAuthenticateDto)">
+             <summary>
+             It is an authentication method.
+             </summary>
+             <remarks>
+             Sample request:
+             
+                 {
+                    "Username": "emreoz37",
+                    "Password": "1234"
+                 }
+            
+             </remarks>
+             <param name="user">User for authenticate </param>
+             <returns>user information</returns>
+             <response code="200">If logged in</response>
+             <response code="400">If bad request</response>   
+             <response code="404">If the item is null</response>   
+             <response code="500">If something went wrong</response>      
+        </member>
+        <member name="T:MyBlog.WebApi.DTOs.Users.UserForAuthenticateDto">
+            <summary>
+            User for authenticate dto
+            </summary>
+        </member>
+        <member name="T:MyBlog.WebApi.Factories.BlogFactory">
+            <summary>
+            Represents the blog model factory
+            </summary>
+        </member>
+        <member name="M:MyBlog.WebApi.Factories.BlogFactory.PrepareBlogPostResponse(MyBlog.WebApi.DTOs.Blogs.BlogPostDto,Core.Domain.Blogs.BlogPost,System.Boolean)">
+            <summary>
+            Prepare blog post response
+            </summary>
+            <param name="blogPostDto">Blog post dto</param>
+            <param name="blogPost">Blog post entity</param>
+            <param name="prepareComments">Whether to prepare blog comments</param>
+        </member>
+        <member name="M:MyBlog.WebApi.Factories.BlogFactory.PrepareBlogPostCommentModel(Core.Domain.Blogs.BlogComment)">
+            <summary>
+            Prepare blog comment model
+            </summary>
+            <param name="blogComment">Blog comment entity</param>
+            <returns>Blog comment dto</returns>
+        </member>
+        <member name="T:MyBlog.WebApi.Factories.IBlogFactory">
+            <summary>
+            Represents the blog model factory
+            </summary>
+        </member>
+        <member name="M:MyBlog.WebApi.Factories.IBlogFactory.PrepareBlogPostResponse(MyBlog.WebApi.DTOs.Blogs.BlogPostDto,Core.Domain.Blogs.BlogPost,System.Boolean)">
+            <summary>
+            Prepare blog post response
+            </summary>
+            <param name="blogPostDto">Blog post dto</param>
+            <param name="blogPost">Blog post entity</param>
+            <param name="prepareComments">Whether to prepare blog comments</param>
+        </member>
+        <member name="M:MyBlog.WebApi.Factories.IBlogFactory.PrepareBlogPostCommentModel(Core.Domain.Blogs.BlogComment)">
+            <summary>
+            Prepare blog comment model
+            </summary>
+            <param name="blogComment">Blog comment entity</param>
+            <returns>Blog comment dto</returns>
+        </member>
+        <member name="P:MyBlog.WebApi.Infrastructure.Cache.CacheDefaults.BlogCommentsNumberKey">
+            <summary>
+            Key for number of blog comments
+            </summary>
+            <remarks>
+            {0} : blog post ID
+            {1} : are only approved comments?
+            </remarks>
+        </member>
+        <member name="T:MyBlog.WebApi.Infrastructure.DependencyRegistrar">
+            <summary>
+            Dependency registrar
+            </summary>
+        </member>
+        <member name="M:MyBlog.WebApi.Infrastructure.DependencyRegistrar.Register(Autofac.ContainerBuilder)">
+            <summary>
+            Register services and interfaces
+            </summary>
+            <param name="builder">Container builder</param>
+        </member>
+        <member name="T:MyBlog.WebApi.Infrastructure.Mapper.Extensions.MappingExtensions">
+            <summary>
+            Represents the extensions to map entity to Dto and vise versa
+            </summary>
+        </member>
+        <member name="M:MyBlog.WebApi.Infrastructure.Mapper.Extensions.MappingExtensions.Map``1(System.Object)">
+            <summary>
+            Execute a mapping from the source object to a new destination object. The source type is inferred from the source object
+            </summary>
+            <typeparam name="TDestination">Destination object type</typeparam>
+            <param name="source">Source object to map from</param>
+            <returns>Mapped destination object</returns>
+        </member>
+        <member name="M:MyBlog.WebApi.Infrastructure.Mapper.Extensions.MappingExtensions.MapTo``2(``0,``1)">
+            <summary>
+            Execute a mapping from the source object to the existing destination object
+            </summary>
+            <typeparam name="TSource">Source object type</typeparam>
+            <typeparam name="TDestination">Destination object type</typeparam>
+            <param name="source">Source object to map from</param>
+            <param name="destination">Destination object to map into</param>
+            <returns>Mapped destination object, same instance as the passed destination object</returns>
+        </member>
+        <member name="M:MyBlog.WebApi.Infrastructure.Mapper.Extensions.MappingExtensions.ToDto``1(Core.BaseEntity)">
+            <summary>
+            Execute a mapping from the entity to a new Dto
+            </summary>
+            <typeparam name="TDto">Dto type</typeparam>
+            <param name="entity">Entity to map from</param>
+            <returns>Mapped Dto</returns>
+        </member>
+        <member name="M:MyBlog.WebApi.Infrastructure.Mapper.Extensions.MappingExtensions.ToDto``2(``0,``1)">
+            <summary>
+            Execute a mapping from the entity to the existing Dto
+            </summary>
+            <typeparam name="TEntity">Entity type</typeparam>
+            <typeparam name="TDto">Dto type</typeparam>
+            <param name="entity">Entity to map from</param>
+            <param name="Dto">Dto to map into</param>
+            <returns>Mapped Dto</returns>
+        </member>
+        <member name="M:MyBlog.WebApi.Infrastructure.Mapper.Extensions.MappingExtensions.ToEntity``1(MyBlog.WebApi.Framework.DTOs.BaseRequestDto)">
+            <summary>
+            Execute a mapping from the Dto to a new entity
+            </summary>
+            <typeparam name="TEntity">Entity type</typeparam>
+            <param name="Dto">Dto to map from</param>
+            <returns>Mapped entity</returns>
+        </member>
+        <member name="M:MyBlog.WebApi.Infrastructure.Mapper.Extensions.MappingExtensions.ToEntity``2(``1,``0)">
+            <summary>
+            Execute a mapping from the Dto to the existing entity
+            </summary>
+            <typeparam name="TEntity">Entity type</typeparam>
+            <typeparam name="TDto">Dto type</typeparam>
+            <param name="Dto">Dto to map from</param>
+            <param name="entity">Entity to map into</param>
+            <returns>Mapped entity</returns>
+        </member>
+        <member name="M:MyBlog.WebApi.Infrastructure.Mapper.MapperConfiguration.CreateBlogsMaps">
+            <summary>
+            Create blogs maps 
+            </summary>new
+        </member>
+        <member name="M:MyBlog.WebApi.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add services to the application and configure service provider
+            </summary>
+            <param name="services">Collection of service descriptors</param>
+        </member>
+        <member name="M:MyBlog.WebApi.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Configure the application HTTP request pipeline
+            </summary>
+            <param name="application">Builder for configuring an application's request pipeline</param>
+        </member>
+    </members>
+</doc>

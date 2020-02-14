@@ -1,5 +1,6 @@
 ﻿using Core;
 using Core.Domain.Blogs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -16,6 +17,8 @@ using System;
 
 namespace MyBlog.WebApi.Controllers
 {
+    [Authorize]
+    [Produces("application/json")]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]

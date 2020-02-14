@@ -5,6 +5,7 @@ using MyBlog.WebApi.Infrastructure.Cache;
 using MyBlog.WebApi.Infrastructure.Mapper.Extensions;
 using Services.Blogs;
 using Services.Helpers;
+using Services.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,16 +21,19 @@ namespace MyBlog.WebApi.Factories
         private readonly IBlogService _blogService;
         private readonly IStaticCacheManager _cacheManager;
         private readonly IDateTimeHelper _dateTimeHelper;
+        private readonly IUserService _userService;
         #endregion
 
         #region Constructor
         public BlogFactory(IBlogService blogService,
             IStaticCacheManager cacheManager,
-            IDateTimeHelper dateTimeHelper)
+            IDateTimeHelper dateTimeHelper,
+            IUserService userService)
         {
             _blogService = blogService;
             _cacheManager = cacheManager;
             _dateTimeHelper = dateTimeHelper;
+            _userService = userService;
         }
         #endregion
 
@@ -83,10 +87,11 @@ namespace MyBlog.WebApi.Factories
             if (blogComment == null)
                 throw new ArgumentNullException(nameof(blogComment));
 
-            //var customer = _customerService.GetCustomerById(blogComment.CustomerId);
-
+            var user = _userService.GetUserById(blogComment.CustomerId);
+            
             var blogCommentDto = blogComment.ToDto<BlogCommentDto>();
-            blogCommentDto.CustomerName = "TEST";
+            blogCommentDto.CustomerName = user?.Firstname + user?.Lastname;
+            blogCommentDto.CustomerAvatarUrl = user?.ProfileUrl;
             blogCommentDto.AllowViewingProfiles = false;
             blogCommentDto.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogComment.CreatedOnUtc, DateTimeKind.Utc).ToString("g"); //TODO: Can be changed according to need
 

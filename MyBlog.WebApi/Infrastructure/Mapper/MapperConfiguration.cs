@@ -2,6 +2,8 @@
 using AutoMapper;
 using Core.Domain.Blogs;
 using MyBlog.WebApi.DTOs.Blogs;
+using MyBlog.WebApi.DTOs.Users;
+using Core.Domain.Users;
 
 namespace MyBlog.WebApi.Infrastructure.Mapper
 {
@@ -10,6 +12,7 @@ namespace MyBlog.WebApi.Infrastructure.Mapper
         public MapperConfiguration()
         {
             CreateBlogsMaps();
+            CreateUsersMaps();
         }
 
         /// <summary>
@@ -47,6 +50,15 @@ namespace MyBlog.WebApi.Infrastructure.Mapper
 
             #endregion
 
+        }
+
+        protected virtual void CreateUsersMaps()
+        {
+            CreateMap<UserDto, User>()
+                .ForMember(entity => entity.Password, options => options.Ignore());
+
+            CreateMap<User, UserDto>();
+            
         }
 
 

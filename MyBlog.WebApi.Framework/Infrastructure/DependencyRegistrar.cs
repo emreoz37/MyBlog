@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Services;
 using Services.Blogs;
 using Services.Helpers;
+using Services.Users;
 
 namespace MyBlog.WebApi.Framework.Infrastructure
 {
@@ -40,6 +41,7 @@ namespace MyBlog.WebApi.Framework.Infrastructure
 
             builder.RegisterType<BlogService>().As<IBlogService>().InstancePerLifetimeScope();
             builder.RegisterType<DateTimeHelper>().As<IDateTimeHelper>().InstancePerLifetimeScope();
+            builder.RegisterType<UserService>().As<IUserService>().InstancePerLifetimeScope();
         }
     }
 }

@@ -23,8 +23,7 @@ namespace Core.Infrastructure
         /// Configure the using of added middleware
         /// </summary>
         /// <param name="application">Builder for configuring an application's request pipeline</param>
-        /// <param name="loggerFactory">Logger Factory</param>
-        void Configure(IApplicationBuilder application, IHostingEnvironment env, ILoggerFactory loggerFactory);
+        void Configure(IApplicationBuilder application);
 
         /// <summary>
         /// Gets order of this startup configuration implementation

@@ -61,14 +61,14 @@ namespace MyBlog.Web.Framework.Infrastructure
             services.AddEntityFrameworkSqlServer();
             services.AddEntityFrameworkProxies();
 
-            services.ConfigureCors();
-            // services.ConfigureIISIntegration();
+            //Disable automatic 400 respone
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
             //compression
             services.AddResponseCompression();
-
-            //add options feature
-            services.AddOptions();
 
             //add Easy caching
             services.AddEasyCaching(option =>
@@ -79,6 +79,38 @@ namespace MyBlog.Web.Framework.Infrastructure
 
             //add distributed memory cache
             services.AddDistributedMemoryCache();
+
+            services.ConfigureCors();
+            // services.ConfigureIISIntegration();
+
+            //add options feature
+            services.AddOptions();
+
+            var appSettingsSection = config.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            // JWT authentication
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
+            services.AddApiVersioning(o => o.ApiVersionReader = new HeaderApiVersionReader("api-version"));
 
             services.AddSwaggerGen((options) =>
             {
@@ -106,23 +138,22 @@ namespace MyBlog.Web.Framework.Infrastructure
                 });
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement()
-      {
-        {
-          new OpenApiSecurityScheme
-          {
-            Reference = new OpenApiReference
-              {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-              },
-              Scheme = "oauth2",
-              Name = "Bearer",
-              In = ParameterLocation.Header,
-
-            },
-            new List<string>()
-          }
-        });
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                 },
+                                Scheme = "oauth2",
+                                Name = "Bearer",
+                                In = ParameterLocation.Header,
+                                },
+                        new List<string>()
+                    }
+                });
 
                 //TODO: Could dynamically find here.
                 var xmlFile = typeFinder.GetAssemblies().FirstOrDefault(x => x.GetName().Name == "MyBlog.WebApi");
@@ -134,39 +165,9 @@ namespace MyBlog.Web.Framework.Infrastructure
 
             });
 
-            var appSettingsSection = config.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
-
-            // JWT authentication
-            var appSettings = appSettingsSection.Get<AppSettings>();
-            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
-
             Log.Logger = new LoggerConfiguration()
-                   .ReadFrom.Configuration(config)
-                   .CreateLogger();
-
-            //Disable automatic 400 respone
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
+                  .ReadFrom.Configuration(config)
+                  .CreateLogger();
 
             var mvcBuilder = services.AddMvc(options =>
             {
@@ -189,16 +190,17 @@ namespace MyBlog.Web.Framework.Infrastructure
 
             });
 
-            services.AddApiVersioning(o => o.ApiVersionReader = new HeaderApiVersionReader("api-version"));
-
         }
 
         /// Configure the using of added middleware
         /// </summary>
         /// <param name="application">Builder for configuring an application's request pipeline</param>
         /// <param name="loggerFactory">Logger Factory</param>
-        public virtual void Configure(IApplicationBuilder application, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public virtual void Configure(IApplicationBuilder application)
         {
+            var env = StartupEngineContext.Current.Resolve<IHostingEnvironment>();
+            var loggerFactory = StartupEngineContext.Current.Resolve<ILoggerFactory>();
+
             if (env.IsDevelopment())
             {
                 application.UseDeveloperExceptionPage();
@@ -209,15 +211,14 @@ namespace MyBlog.Web.Framework.Infrastructure
                 application.UseHsts();
             }
 
+            application.ConfigureCustomExceptionMiddleware();
+
             application.UseResponseCompression();
+
+            application.UseStaticFiles();
 
             //easy caching
             application.UseEasyCaching();
-
-            //Swagger   
-            application.UseSwagger();
-
-            application.UseStaticFiles();
 
             application.UseCors("CorsPolicy");
 
@@ -226,16 +227,17 @@ namespace MyBlog.Web.Framework.Infrastructure
                 ForwardedHeaders = ForwardedHeaders.All
             });
 
+            application.UseAuthentication();
+
+            //Swagger   
+            application.UseSwagger();
+
             application.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Blog Api v1");
             });
 
             loggerFactory.AddSerilog();
-
-            application.ConfigureCustomExceptionMiddleware();
-
-            application.UseAuthentication();
 
             //app.UseHttpsRedirection();
             application.UseMvc();

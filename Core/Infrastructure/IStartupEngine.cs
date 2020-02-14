@@ -22,9 +22,7 @@ namespace Core.Infrastructure
         /// Configure HTTP request pipeline
         /// </summary>
         /// <param name="application">Builder for configuring an application's request pipeline</param>
-        /// <param name="env">Hosting environment</param>
-        /// <param name="loggerFactory">Logger Factory</param>
-        void ConfigureRequestPipeline(IApplicationBuilder application, IHostingEnvironment env, ILoggerFactory loggerFactory);
+        void ConfigureRequestPipeline(IApplicationBuilder application);
 
         /// <summary>
         /// Resolve dependency

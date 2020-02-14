@@ -162,7 +162,7 @@ namespace Core.Infrastructure
         /// <param name="application">Builder for configuring an application's request pipeline</param>
         /// <param name="env">Hosting environment</param>
         /// <param name="loggerFactory">Logger Factory</param>
-        public virtual void ConfigureRequestPipeline(IApplicationBuilder application, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public virtual void ConfigureRequestPipeline(IApplicationBuilder application)
         {
             //find startup configurations provided by other assemblies
             var typeFinder = Resolve<ITypeFinder>();
@@ -175,7 +175,7 @@ namespace Core.Infrastructure
 
             //configure request pipeline
             foreach (var instance in instances)
-                instance.Configure(application, env, loggerFactory);
+                instance.Configure(application);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using Core.Domain.Blogs;
+using Microsoft.AspNetCore.Mvc;
 using MyBlog.WebApi.DTOs.Blogs;
 
 namespace MyBlog.WebApi.Factories
@@ -22,5 +23,21 @@ namespace MyBlog.WebApi.Factories
         /// <param name="blogComment">Blog comment entity</param>
         /// <returns>Blog comment dto</returns>
         BlogCommentDto PrepareBlogPostCommentModel(BlogComment blogComment);
+
+        /// <summary>
+        /// Prepare blog post list dto
+        /// </summary>
+        /// <param name="urlHelper">UrlHelper</param>
+        /// <param name="pagingDto">BlogPostForPagingDto</param>
+        /// <returns>BlogPostListDto</returns>
+        BlogPostListDto PrepareBlogPostListDto(IUrlHelper urlHelper, BlogPostForPagingDto pagingDto);
+
+        /// <summary>
+        /// Prepare blog post seach dto
+        /// </summary>
+        /// <param name="urlHelper">UrlHelper</param>
+        /// <param name="filteringDto">BlogPostForFilteringDto</param>
+        /// <returns>BlogPostListDto</returns>
+        BlogPostListDto PrepareBlogPostSearchDto(IUrlHelper urlHelper, BlogPostForFilteringDto filteringDto);
     }
 }

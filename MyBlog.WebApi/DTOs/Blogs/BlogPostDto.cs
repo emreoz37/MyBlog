@@ -1,4 +1,5 @@
-﻿using MyBlog.WebApi.Framework.DTOs;
+﻿using Core;
+using MyBlog.WebApi.Framework.DTOs;
 using System;
 using System.Collections.Generic;
 
@@ -25,5 +26,7 @@ namespace MyBlog.WebApi.DTOs.Blogs
         public IList<string> Tags { get; set; }
 
         public IList<BlogCommentDto> Comments { get; set; }
-    }
+
+        public BaseLinkInfo PostWithCommentsLink { get; set;}
+}
 }

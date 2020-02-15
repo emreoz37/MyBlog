@@ -33,9 +33,6 @@ namespace MyBlog.WebApi.Framework.Infrastructure.Extensions
             var engine = StartupEngineContext.Create();
             var serviceProvider = engine.ConfigureServices(services, configuration);
 
-            //log application start
-            engine.Resolve<ILogger>().Info("Web Application started");
-
             return serviceProvider;
         }
 

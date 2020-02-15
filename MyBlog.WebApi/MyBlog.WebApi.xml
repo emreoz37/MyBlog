@@ -49,6 +49,22 @@
             <param name="blogComment">Blog comment entity</param>
             <returns>Blog comment dto</returns>
         </member>
+        <member name="M:MyBlog.WebApi.Factories.BlogFactory.PrepareBlogPostListDto(Microsoft.AspNetCore.Mvc.IUrlHelper,MyBlog.WebApi.DTOs.Blogs.BlogPostForPagingDto)">
+            <summary>
+            Prepare blog post list dto
+            </summary>
+            <param name="urlHelper">UrlHelper</param>
+            <param name="pagingDto">BlogPostForPagingDto</param>
+            <returns>BlogPostListDto</returns>
+        </member>
+        <member name="M:MyBlog.WebApi.Factories.BlogFactory.PrepareBlogPostSearchDto(Microsoft.AspNetCore.Mvc.IUrlHelper,MyBlog.WebApi.DTOs.Blogs.BlogPostForFilteringDto)">
+            <summary>
+            Prepare blog post seach dto
+            </summary>
+            <param name="urlHelper">UrlHelper</param>
+            <param name="filteringDto">BlogPostForFilteringDto</param>
+            <returns>BlogPostListDto</returns>
+        </member>
         <member name="T:MyBlog.WebApi.Factories.IBlogFactory">
             <summary>
             Represents the blog model factory
@@ -68,6 +84,22 @@
             </summary>
             <param name="blogComment">Blog comment entity</param>
             <returns>Blog comment dto</returns>
+        </member>
+        <member name="M:MyBlog.WebApi.Factories.IBlogFactory.PrepareBlogPostListDto(Microsoft.AspNetCore.Mvc.IUrlHelper,MyBlog.WebApi.DTOs.Blogs.BlogPostForPagingDto)">
+            <summary>
+            Prepare blog post list dto
+            </summary>
+            <param name="urlHelper">UrlHelper</param>
+            <param name="pagingDto">BlogPostForPagingDto</param>
+            <returns>BlogPostListDto</returns>
+        </member>
+        <member name="M:MyBlog.WebApi.Factories.IBlogFactory.PrepareBlogPostSearchDto(Microsoft.AspNetCore.Mvc.IUrlHelper,MyBlog.WebApi.DTOs.Blogs.BlogPostForFilteringDto)">
+            <summary>
+            Prepare blog post seach dto
+            </summary>
+            <param name="urlHelper">UrlHelper</param>
+            <param name="filteringDto">BlogPostForFilteringDto</param>
+            <returns>BlogPostListDto</returns>
         </member>
         <member name="T:MyBlog.WebApi.Infrastructure.DependencyRegistrar">
             <summary>

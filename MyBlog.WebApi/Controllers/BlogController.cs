@@ -47,6 +47,55 @@ namespace MyBlog.WebApi.Controllers
         #region Methods
 
         #region BlogPost
+
+        [HttpGet(Name = "GetBlogPostAll")]
+        public IActionResult GetBlogPostAll([FromQuery]BlogPostForPagingDto pagingDto)
+        {
+            try
+            {
+                var blogPostList = _blogFactory.PrepareBlogPostListDto(Url, pagingDto);
+                Response.Headers.Add("X-Pagination", blogPostList.BlogPostPagingContext.ToJson());
+
+
+
+                _logger.LogInformation($"Returned all blog post from database.");
+                return Ok(blogPostList);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = $"BlogController GetBlogPostAll Method. Something went wrong. Ex Message : { ex.Message }";
+                _logger.LogError(ex, logMessage);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
+        [HttpGet("Search", Name = "GetBlogPostSearch")]
+        public IActionResult GetBlogPostSearch([FromQuery]BlogPostForFilteringDto filteringDto)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(filteringDto.Tag))
+                {
+                    _logger.LogError("Tag is null or empty");
+                    return NotFound();
+                }
+
+                var blogPostList = _blogFactory.PrepareBlogPostSearchDto(Url, filteringDto);
+                Response.Headers.Add("X-Pagination", blogPostList.BlogPostPagingContext.ToJson());
+
+                _logger.LogInformation($"Returned all blog post from database.");
+                return Ok(blogPostList);
+            }
+            catch (Exception ex)
+            {
+                var logMessage = $"BlogController GetBlogPostAll Method. Something went wrong. Ex Message : { ex.Message }";
+                _logger.LogError(ex, logMessage);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
         [HttpGet("{id}", Name = "PostById")]
         public IActionResult GetPostId(int id)
         {
@@ -62,6 +111,17 @@ namespace MyBlog.WebApi.Controllers
                 _logger.LogInformation($"Returned blog with id: {id}");
                 var blogPostDto = new BlogPostDto();
                 _blogFactory.PrepareBlogPostResponse(blogPostDto, blogPost, false);
+
+                if (blogPostDto.NumberOfComments > 0)
+                {
+                    blogPostDto.PostWithCommentsLink = new BaseLinkInfo
+                    {
+                        Href = Url.Link("GetPostWithComments", new { blogPostDto.Id }),
+                        Rel = "postWithCommentsPage",
+                        Method = HttpMethods.Get.ToString()
+                    };
+                }
+
                 return Ok(blogPostDto);
 
             }
@@ -74,7 +134,7 @@ namespace MyBlog.WebApi.Controllers
 
         }
 
-        [HttpGet("{id}/comments/")]
+        [HttpGet("{id}/comments/", Name = "GetPostWithComments")]
         public IActionResult GetPostWithComments(int id)
         {
             try
@@ -251,9 +311,10 @@ namespace MyBlog.WebApi.Controllers
 
                 var blogCommentEntity = blogComment.ToEntity<BlogComment>();
                 blogCommentEntity.CreatedOnUtc = DateTime.UtcNow;
+                blogCommentEntity.IsApproved = true;
                 _blogService.InsertBlogComment(blogCommentEntity);
 
-                var blogCommentDto =  _blogFactory.PrepareBlogPostCommentModel(blogCommentEntity);
+                var blogCommentDto = _blogFactory.PrepareBlogPostCommentModel(blogCommentEntity);
 
                 return CreatedAtRoute("CommentById", new { id = blogCommentDto.Id }, blogCommentDto);
 
@@ -303,7 +364,7 @@ namespace MyBlog.WebApi.Controllers
                 _logger.LogError(ex, logMessage);
                 return StatusCode(500, "Internal server error");
             }
-           
+
         }
 
         [HttpDelete("Comment/Delete/{id}")]
